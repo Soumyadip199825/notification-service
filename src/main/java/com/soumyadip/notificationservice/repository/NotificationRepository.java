@@ -10,7 +10,12 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-//    To retrieve all the notifications for a particular userId
+//    To retrieve all the notifications for a particular userId and notificationstatus
+    Page<Notification> findByUserIdAndStatus(
+            Long userId,
+            NotificationStatus status,
+            Pageable pageable
+    );
     Page<Notification> findByUserId(
             Long userId,
             Pageable pageable
