@@ -1,10 +1,13 @@
 package com.soumyadip.notificationservice.entity;
 
+import com.soumyadip.notificationservice.enums.NotificationStatus;
 import com.soumyadip.notificationservice.enums.NotificationType;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Entity
 @Table(name = "notifications")
 public class Notification {
@@ -19,9 +22,12 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType eventType;
 
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
+
     private String title;
 
-    private String messages;
+    private String message;
 
     private LocalDateTime createdAt;
 }

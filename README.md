@@ -23,21 +23,14 @@ PUT /notifications/{id}/read
 
 GET /users/{userId}/notifications/unread-count
 
-Notification Table:
+========
+POST   /notifications
 
-id
+GET    /notifications/users/{userId}
 
-userId
+GET   /notifications/users/{userId}/unread-count
 
-sequenceNumber
+PATCH  /notifications/{id}/read
 
-type
-
-title
-
-message
-
-status
-
-createdAt
+PATCH  /notifications/users/{userId}/read-all
 
