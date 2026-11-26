@@ -46,7 +46,7 @@ public class NotificationServiceImpl
     @Override
     public NotificationResponse createNotification(
             CreateNotificationRequest request) {
-        long nextSequence = generateSequenceNumber(request);
+        long nextSequence = generateSequenceNumber(request.getUserId());
 
         Notification notification =
                 Notification.builder()
@@ -66,18 +66,25 @@ public class NotificationServiceImpl
 
         return notificationMapper.toResponse(saved);
     }
-    Long generateSequenceNumber(CreateNotificationRequest request){
+    Long generateSequenceNumber(Long userId){
         UserSequence userSequence =
                 userSequenceRepository
                         .findForUpdate(
-                                request.getUserId()
+                                userId
                         )
-                        .orElse(...);
+                        .orElseGet(()->{
+                            UserSequence newUserSequence = UserSequence.builder()
+                                    .userId(userId)
+                                    .nextSequence(1L)
+                                    .build();
+                            userSequenceRepository.save(newUserSequence);
+                            return newUserSequence;
+                        });
 
         Long nextSequence =
-                userSequence.getSequenceNumber();
+                userSequence.getNextSequence();
 
-        userSequence.setSequenceNumber(
+        userSequence.setNextSequence(
                 nextSequence + 1
         );
         return nextSequence;
