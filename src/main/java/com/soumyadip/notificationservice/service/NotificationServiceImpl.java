@@ -109,9 +109,12 @@ public class NotificationServiceImpl
                 .orElseThrow(() -> new NotificationNotFoundException(
                         notificationId
                 ));
+//      @Transactional applies dirty checking and hence persisted entity is updated without .save().
         notification.setStatus(NotificationStatus.READ);
     }
 
+//   Though it is only one bulk update query therefore no two db updates unlike marAsRead(), where findById, and
+//   then .save() inside transactional but still @Transactional because bulk update needs this.
     @Transactional
     @Override
     public int markAllAsRead(
