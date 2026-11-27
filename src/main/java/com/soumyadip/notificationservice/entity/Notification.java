@@ -4,11 +4,13 @@ import com.soumyadip.notificationservice.enums.NotificationStatus;
 import com.soumyadip.notificationservice.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Entity
+@Data
 @Table(name = "notifications")
 public class Notification {
     @Id

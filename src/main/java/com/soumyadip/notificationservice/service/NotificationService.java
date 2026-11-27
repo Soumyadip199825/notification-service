@@ -27,6 +27,6 @@ public interface NotificationService {
     void markAsRead(
             Long notificationId);
 
-    void markAllAsRead(
+    int markAllAsRead(
             Long userId);
 }

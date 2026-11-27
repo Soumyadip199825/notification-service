@@ -11,9 +11,12 @@ import com.soumyadip.notificationservice.repository.NotificationRepository;
 import com.soumyadip.notificationservice.repository.UserSequenceRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,12 +62,66 @@ public class NotificationServiceImpl
                         .createdAt(LocalDateTime.now())
                         .build();
 
+//        Notification object is not in persisted context since a new object is created, hence save().
         Notification saved =
                 notificationRepository.save(
                         notification
                 );
 
         return notificationMapper.toResponse(saved);
+    }
+    @Override
+    public Page<NotificationResponse> getNotifications(
+            Long userId,
+            Pageable pageable) {
+
+        return notificationRepository
+                .findByUserId(
+                        userId,
+                        pageable
+                )
+                .map(
+                        notificationMapper::toResponse
+                );
+    }
+    @Override
+    public Page<NotificationResponse> getNotificationsByStatus(
+            Long userId,
+            NotificationStatus status,
+            Pageable pageable){
+        return notificationRepository
+                .findByUserIdAndStatus(
+                        userId,
+                        status,
+                        pageable
+                )
+                .map(
+                        notificationMapper::toResponse
+                );
+    }
+
+    @Transactional
+    @Override
+    public void markAsRead(
+            Long notificationId){
+        Notification notification = notificationRepository
+                .findById(notificationId)
+                .orElseThrow(() -> new NotificationNotFoundException(
+                        notificationId
+                ));
+        notification.setStatus(NotificationStatus.READ);
+    }
+
+    @Transactional
+    @Override
+    public int markAllAsRead(
+            Long userId) {
+
+        return notificationRepository
+                .markAllAsRead(
+                        userId,
+                        NotificationStatus.READ
+                );
     }
     Long generateSequenceNumber(Long userId){
         UserSequence userSequence =
@@ -84,6 +141,8 @@ public class NotificationServiceImpl
         Long nextSequence =
                 userSequence.getNextSequence();
 
+//        Due to dirty checking inside @Transactional, and userSequence already in persisted context hence no need of
+//        save().
         userSequence.setNextSequence(
                 nextSequence + 1
         );
